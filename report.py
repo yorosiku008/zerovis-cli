@@ -1,0 +1,106 @@
+from datetime import datetime
+from pathlib import Path
+from typing import Dict
+
+from rich.console import Console
+from rich.table import Table
+from rich import box
+
+AXIS_LABELS = {
+    'identity':    ('ID・認証',         '35%'),
+    'device':      ('デバイス',         '25%'),
+    'application': ('アプリケーション', '25%'),
+    'network':     ('ネットワーク',     '15%'),
+}
+
+GRADE_COLORS = {'S': 'bright_cyan', 'A': 'green', 'B': 'yellow', 'C': 'orange3', 'D': 'red', 'E': 'bright_red'}
+
+MATURITY_LABELS = {
+    'S': 'Level 5: 最適化段階',
+    'A': 'Level 4: 定量的管理',
+    'B': 'Level 3: 定義済み',
+    'C': 'Level 2: 管理段階',
+    'D': 'Level 1: 初期段階',
+    'E': 'Level 0: 未着手',
+}
+
+
+def _score_bar(score: int, width: int = 20) -> str:
+    filled = round(score / 100 * width)
+    return '█' * filled + '░' * (width - filled)
+
+
+def print_report(score_data: Dict) -> None:
+    console = Console(legacy_windows=False)
+    total = score_data['total']
+    grade = score_data['grade']
+    org_type = score_data.get('org_type', 'general')
+    color = GRADE_COLORS.get(grade, 'white')
+    maturity = MATURITY_LABELS.get(grade, '')
+
+    console.print('\n[bold]*** ZeroVis JP — ゼロトラスト成熟度評価[/bold]')
+    console.print('=' * 60)
+    console.print(f'組織種別: {org_type}')
+    console.print(f'評価日時: {datetime.now().strftime("%Y-%m-%d %H:%M")}')
+    console.print()
+    console.print(f'[bold {color}]成熟度スコア: {total} / 100   グレード: {grade}   {maturity}[/bold {color}]')
+    console.print()
+
+    table = Table(box=box.SIMPLE, show_header=True, header_style='bold dim')
+    table.add_column('軸', style='white', width=16)
+    table.add_column('重み', width=5)
+    table.add_column('スコア', width=6)
+    table.add_column('バー', width=22)
+    table.add_column('主な問題', style='dim')
+
+    for axis_key, (label, weight) in AXIS_LABELS.items():
+        axis = score_data['axes'].get(axis_key, {'score': 0, 'issues': []})
+        s = axis['score']
+        c = 'green' if s >= 80 else ('yellow' if s >= 60 else 'red')
+        bar = _score_bar(s)
+        issue_text = axis['issues'][0] if axis['issues'] else '問題なし'
+        table.add_row(label, weight, f'[{c}]{s}[/{c}]', f'[{c}]{bar}[/{c}]', issue_text)
+
+    console.print(table)
+
+    all_issues = []
+    for axis_key in AXIS_LABELS:
+        all_issues.extend(score_data['axes'].get(axis_key, {}).get('issues', []))
+
+    if all_issues:
+        console.print('[bold]改善が必要な項目:[/bold]')
+        for i, issue in enumerate(all_issues, 1):
+            console.print(f'  {i}. {issue}')
+    console.print()
+
+
+def build_md_report(score_data: Dict) -> str:
+    total = score_data['total']
+    grade = score_data['grade']
+    maturity = MATURITY_LABELS.get(grade, '')
+    lines = [
+        '# ZeroVis JP — ゼロトラスト成熟度評価レポート',
+        '',
+        f'**評価日時:** {datetime.now().strftime("%Y-%m-%d %H:%M")}',
+        f'**成熟度スコア:** {total} / 100  **グレード:** {grade}  {maturity}',
+        '',
+        '## 軸別スコア',
+        '',
+        '| 軸 | 重み | スコア |',
+        '|---|---|---|',
+    ]
+    for axis_key, (label, weight) in AXIS_LABELS.items():
+        s = score_data['axes'].get(axis_key, {}).get('score', 0)
+        lines.append(f'| {label} | {weight} | {s} |')
+
+    lines += ['', '## 改善項目', '']
+    for axis_key, (label, _) in AXIS_LABELS.items():
+        issues = score_data['axes'].get(axis_key, {}).get('issues', [])
+        for issue in issues:
+            lines.append(f'- [{label}] {issue}')
+
+    return '\n'.join(lines)
+
+
+def save_md_report(content: str, path: str) -> None:
+    Path(path).write_text(content, encoding='utf-8')

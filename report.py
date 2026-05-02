@@ -38,7 +38,7 @@ def print_report(score_data: Dict) -> None:
     color = GRADE_COLORS.get(grade, 'white')
     maturity = MATURITY_LABELS.get(grade, '')
 
-    console.print('\n[bold]*** ZeroVis JP — ゼロトラスト成熟度評価[/bold]')
+    console.print('\n[bold]*** ZeroVis JP -- ゼロトラスト成熟度評価[/bold]')
     console.print('=' * 60)
     console.print(f'組織種別: {org_type}')
     console.print(f'評価日時: {datetime.now().strftime("%Y-%m-%d %H:%M")}')
@@ -79,7 +79,7 @@ def build_md_report(score_data: Dict) -> str:
     grade = score_data['grade']
     maturity = MATURITY_LABELS.get(grade, '')
     lines = [
-        '# ZeroVis JP — ゼロトラスト成熟度評価レポート',
+        '# ZeroVis JP -- ゼロトラスト成熟度評価レポート',
         '',
         f'**評価日時:** {datetime.now().strftime("%Y-%m-%d %H:%M")}',
         f'**成熟度スコア:** {total} / 100  **グレード:** {grade}  {maturity}',

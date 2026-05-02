@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeroVis JP β版 オンボーディングガイド</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.7; }
+    .header { background: linear-gradient(135deg, #0a1628 0%, #061020 100%); padding: 48px 24px; text-align: center; border-bottom: 1px solid #30363d; }
+    .header h1 { font-size: 2rem; font-weight: 700; color: #f0f6fc; }
+    .header p { color: #8b949e; margin-top: 8px; font-size: 1rem; }
+    .badge { display: inline-block; background: #0a1628; color: #79c0ff; font-size: 0.75rem; font-weight: 700; padding: 2px 10px; border-radius: 20px; border: 1px solid #1f6feb; margin-bottom: 12px; letter-spacing: 0.05em; }
+    .container { max-width: 860px; margin: 0 auto; padding: 40px 24px; }
+    .step { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; position: relative; }
+    .step-number { position: absolute; top: -14px; left: 24px; background: #0a1628; color: #79c0ff; border: 1px solid #1f6feb; font-size: 0.8rem; font-weight: 700; padding: 2px 12px; border-radius: 20px; }
+    .step h2 { font-size: 1.15rem; font-weight: 700; color: #f0f6fc; margin-bottom: 12px; }
+    .step p { color: #8b949e; font-size: 0.95rem; margin-bottom: 12px; }
+    pre { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 16px 20px; font-family: 'Courier New', monospace; font-size: 0.875rem; color: #a5f3a5; overflow-x: auto; margin: 12px 0; }
+    code { background: #1c2128; color: #ff7b72; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.85em; }
+    .note { background: #1c2128; border-left: 3px solid #388bfd; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; color: #79c0ff; font-size: 0.9rem; }
+    .success { background: #1c2128; border-left: 3px solid #3fb950; border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; color: #56d364; font-size: 0.9rem; }
+    .axis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
+    .axis-card { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 14px 16px; text-align: center; }
+    .ax-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 4px; color: #79c0ff; }
+    .ax-weight { font-size: 1.2rem; font-weight: 700; color: #f0f6fc; }
+    .ax-desc { font-size: 0.75rem; color: #8b949e; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.875rem; }
+    th { background: #1c2128; color: #8b949e; font-weight: 600; padding: 10px 14px; text-align: left; border-bottom: 1px solid #30363d; }
+    td { padding: 10px 14px; border-bottom: 1px solid #21262d; color: #e6edf3; }
+    tr:last-child td { border-bottom: none; }
+    .footer { text-align: center; padding: 40px 24px; color: #484f58; font-size: 0.85rem; border-top: 1px solid #21262d; }
+    h3 { color: #f0f6fc; font-size: 1rem; margin: 18px 0 8px; }
+    .maturity-bar { display: flex; gap: 4px; margin: 16px 0; }
+    .mat-level { flex: 1; padding: 10px 6px; text-align: center; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge">β版</div>
+  <h1>ZeroVis JP オンボーディングガイド</h1>
+  <p>ゼロトラスト成熟度評価CLI — 5分でセットアップ完了</p>
+</div>
+
+<div class="container">
+
+  <!-- STEP 1 -->
+  <div class="step">
+    <div class="step-number">STEP 1</div>
+    <h2>動作環境の確認</h2>
+    <p>ZeroVis JP は Python 3.9 以上が必要です。</p>
+    <pre>python --version
+# Python 3.9.x 以上であれば OK</pre>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step">
+    <div class="step-number">STEP 2</div>
+    <h2>リポジトリのクローンとインストール</h2>
+    <pre>git clone https://github.com/yorosiku008/zerovis-cli.git
+cd zerovis-cli
+pip install -r requirements.txt</pre>
+    <div class="note">依存パッケージは <code>rich</code>（ターミナル描画）のみです。外部APIへの接続は不要です。</div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step">
+    <div class="step-number">STEP 3</div>
+    <h2>デモモードで動作確認</h2>
+    <p>組織種別を指定してゼロトラスト成熟度をシミュレーションできます。</p>
+    <pre># 一般組織でデモ
+python main.py --demo
+
+# 自治体向けデモ
+python main.py --demo --org-type municipal
+
+# 製造業向けデモ
+python main.py --demo --org-type manufacturing</pre>
+    <div class="success">4軸スコアバー、成熟度グレード、改善項目が表示されれば成功です。</div>
+  </div>
+
+  <!-- STEP 4 -->
+  <div class="step">
+    <div class="step-number">STEP 4</div>
+    <h2>4軸スコアリング — NIST SP 800-207準拠</h2>
+    <p>ゼロトラスト移行の4つの重要領域を定量評価します。</p>
+    <div class="axis-grid">
+      <div class="axis-card">
+        <div class="ax-label">ID・認証</div>
+        <div class="ax-weight">35%</div>
+        <div class="ax-desc">MFAカバレッジ / SSO / 特権アカウント管理</div>
+      </div>
+      <div class="axis-card">
+        <div class="ax-label">デバイス</div>
+        <div class="ax-weight">25%</div>
+        <div class="ax-desc">MDM管理率 / EDR導入 / OSパッチ適用率</div>
+      </div>
+      <div class="axis-card">
+        <div class="ax-label">アプリケーション</div>
+        <div class="ax-weight">25%</div>
+        <div class="ax-desc">SAML/OAuth統合率 / シャドーIT / API認証</div>
+      </div>
+      <div class="axis-card">
+        <div class="ax-label">ネットワーク</div>
+        <div class="ax-weight">15%</div>
+        <div class="ax-desc">VPN依存度 / マイクロセグメンテーション / 通信検査</div>
+      </div>
+    </div>
+
+    <h3>成熟度レベル</h3>
+    <table>
+      <tr><th>グレード</th><th>スコア</th><th>成熟度レベル</th><th>状態</th></tr>
+      <tr><td>S</td><td>90〜100</td><td>Level 5: 最適化段階</td><td>継続的な自動化・改善が実現</td></tr>
+      <tr><td>A</td><td>80〜89</td><td>Level 4: 定量的管理</td><td>メトリクスに基づく管理が確立</td></tr>
+      <tr><td>B</td><td>70〜79</td><td>Level 3: 定義済み</td><td>ポリシー・プロセスが標準化済み</td></tr>
+      <tr><td>C</td><td>60〜69</td><td>Level 2: 管理段階</td><td>基本的な制御が導入済み</td></tr>
+      <tr><td>D</td><td>50〜59</td><td>Level 1: 初期段階</td><td>部分的な対応のみ</td></tr>
+      <tr><td>E</td><td>0〜49</td><td>Level 0: 未着手</td><td>従来型境界防御のみ</td></tr>
+    </table>
+  </div>
+
+  <!-- STEP 5 -->
+  <div class="step">
+    <div class="step-number">STEP 5</div>
+    <h2>対応規制・ガイドライン</h2>
+    <table>
+      <tr><th>規制・ガイドライン</th><th>対象組織</th><th>ZeroVisでの対応</th></tr>
+      <tr><td>総務省ゼロトラスト移行ガイドライン（2023年版）</td><td>地方自治体</td><td>ID・デバイス軸でのギャップ可視化</td></tr>
+      <tr><td>NISC サイバーセキュリティ対策基準</td><td>政府・重要インフラ</td><td>全4軸での準拠状況チェック</td></tr>
+      <tr><td>医療情報システム安全管理ガイドライン第6.0版</td><td>医療機関</td><td>アプリ・ネットワーク軸での対応</td></tr>
+      <tr><td>NIST SP 800-207 Zero Trust Architecture</td><td>全組織</td><td>4軸スコアリングの基盤フレームワーク</td></tr>
+    </table>
+  </div>
+
+  <!-- STEP 6 -->
+  <div class="step">
+    <div class="step-number">STEP 6</div>
+    <h2>Markdownレポートの出力</h2>
+    <pre>python main.py --demo --org-type municipal --output-md
+# zerovis_report_YYYYMMDD.md が保存されます</pre>
+    <div class="note">レポートには成熟度スコア、軸別評価、改善項目一覧が含まれます。IT導入補助金申請書の参考資料として活用できます。</div>
+  </div>
+
+  <!-- STEP 7 -->
+  <div class="step">
+    <div class="step-number">STEP 7</div>
+    <h2>CLIオプション一覧</h2>
+    <table>
+      <tr><th>オプション</th><th>説明</th><th>例</th></tr>
+      <tr><td><code>--demo</code></td><td>デモデータで動作確認</td><td><code>python main.py --demo</code></td></tr>
+      <tr><td><code>--org-type</code></td><td>組織種別: general / municipal / manufacturing / medical / finance</td><td><code>--org-type municipal</code></td></tr>
+      <tr><td><code>--output-md</code></td><td>Markdownレポートをファイル出力</td><td><code>--output-md</code></td></tr>
+    </table>
+  </div>
+
+  <!-- STEP 8 -->
+  <div class="step">
+    <div class="step-number">STEP 8</div>
+    <h2>フィードバックのお願い</h2>
+    <p>β版をお使いいただきありがとうございます。以下の点についてフィードバックをいただけると大変助かります。</p>
+    <ul style="color:#8b949e; padding-left: 20px; margin-top: 8px;">
+      <li>実際の組織評価で使ってみた感想・改善要望</li>
+      <li>対象とする規制・ガイドラインへの要望（金融庁ガイドライン等）</li>
+      <li>IT導入補助金申請書の自動生成機能への需要（将来機能）</li>
+      <li>SaaS版（Web UI・継続監視）への移行希望タイミング</li>
+    </ul>
+    <div class="success" style="margin-top: 16px;">ご連絡先: <a href="mailto:yorosiku008@gmail.com" style="color:#56d364;">yorosiku008@gmail.com</a></div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p>ZeroVis JP β版 — &copy; 2026 yorosiku008</p>
+</div>
+
+</body>
+</html>

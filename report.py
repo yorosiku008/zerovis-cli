@@ -1,6 +1,6 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
 from rich.console import Console
 from rich.table import Table
@@ -30,7 +30,7 @@ def _score_bar(score: int, width: int = 20) -> str:
     return '█' * filled + '░' * (width - filled)
 
 
-def print_report(score_data: Dict) -> None:
+def print_report(score_data: Dict, ai_suggestions: List[str] = None) -> None:
     console = Console(legacy_windows=False)
     total = score_data['total']
     grade = score_data['grade']
@@ -73,8 +73,14 @@ def print_report(score_data: Dict) -> None:
             console.print(f'  {i}. {issue}')
     console.print()
 
+    if ai_suggestions:
+        console.print('[bold bright_cyan]Claude AI 移行ロードマップ:[/bold bright_cyan]')
+        for suggestion in ai_suggestions:
+            console.print(f'  {suggestion}')
+        console.print()
 
-def build_md_report(score_data: Dict) -> str:
+
+def build_md_report(score_data: Dict, ai_suggestions: List[str] = None) -> str:
     total = score_data['total']
     grade = score_data['grade']
     maturity = MATURITY_LABELS.get(grade, '')
@@ -98,6 +104,11 @@ def build_md_report(score_data: Dict) -> str:
         issues = score_data['axes'].get(axis_key, {}).get('issues', [])
         for issue in issues:
             lines.append(f'- [{label}] {issue}')
+
+    if ai_suggestions:
+        lines += ['', '## Claude AI 移行ロードマップ', '']
+        for suggestion in ai_suggestions:
+            lines.append(f'- {suggestion}')
 
     return '\n'.join(lines)
 

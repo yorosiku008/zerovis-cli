@@ -1,6 +1,7 @@
 # ZeroVis JP
 
 [![Tests](https://github.com/yorosiku008/zerovis-cli/actions/workflows/test.yml/badge.svg)](https://github.com/yorosiku008/zerovis-cli/actions)
+[![Beta](https://img.shields.io/badge/β版-募集中-brightgreen)](mailto:yorosiku008@gmail.com)
 
 ゼロトラスト成熟度評価CLI — NIST SP 800-207準拠。ID・デバイス・アプリケーション・ネットワークの4軸で成熟度を100点満点でスコアリング。NISC・総務省ガイドライン対応。
 

@@ -1,6 +1,15 @@
 import argparse
-from datetime import datetime
+import sys
+import io
 from pathlib import Path
+from datetime import datetime
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
+elif sys.stdout.encoding and sys.stdout.encoding.lower() not in ('utf-8', 'utf_8'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
 
 from demo_data import get_demo_score
 from report import print_report, build_md_report, save_md_report
